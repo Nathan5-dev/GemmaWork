@@ -109,11 +109,11 @@ async function extractReferenceText(refFile?: ReferenceFile): Promise<string> {
 // Lazy initialize Gemini client
 function getGenAI() {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
+  if (!apiKey || apiKey.trim() === "") {
     return null;
   }
   return new GoogleGenAI({
-    apiKey: apiKey,
+    apiKey: apiKey.trim(),
     httpOptions: {
       headers: {
         "User-Agent": "aistudio-build",
@@ -389,7 +389,7 @@ async function generateWithGemma(ai: GoogleGenAI, prompt: string, systemInstruct
 
 // Health check endpoint
 app.get(["/api/health", "/health"], (req, res) => {
-  const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY");
+  const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim() !== "");
   res.json({ status: "ok", mode: hasKey ? "live" : "demo" });
 });
 
