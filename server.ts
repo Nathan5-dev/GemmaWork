@@ -44,8 +44,14 @@ async function extractReferenceText(refFile?: ReferenceFile): Promise<string> {
     let text = "";
 
     if (nameLower.endsWith(".pdf") || mimeLower.includes("pdf")) {
-      const pdfParseModule = await import("pdf-parse");
-      const pdfParse = (pdfParseModule as any).default || pdfParseModule;
+      let pdfParse: any;
+      try {
+        const pdfParseModule = await import("pdf-parse/lib/pdf-parse.js" as any);
+        pdfParse = pdfParseModule.default || pdfParseModule;
+      } catch (_) {
+        const pdfParseModule = await import("pdf-parse");
+        pdfParse = (pdfParseModule as any).default || pdfParseModule;
+      }
       const parsed = await pdfParse(buffer);
       text = parsed.text || "";
     } else if (nameLower.endsWith(".docx") || mimeLower.includes("wordprocessingml")) {
@@ -301,14 +307,43 @@ Bien cordialement,
 **${em.senderSignature || "[Votre Nom]"}**`;
 }
 
+// Helper to generate content trying compatible Gemini models in order
+async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
+  const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-3.6-flash"];
+  let lastError: any = null;
+
+  for (const model of modelsToTry) {
+    try {
+      console.log(`[Gemini API] Tentative de génération avec le modèle : ${model}`);
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          systemInstruction,
+          temperature,
+        },
+      });
+
+      if (response && response.text) {
+        return response.text;
+      }
+    } catch (err: any) {
+      console.warn(`[Gemini API] Échec avec ${model} :`, err?.message || err);
+      lastError = err;
+    }
+  }
+
+  throw lastError || new Error("Aucun modèle Gemini valide n'a pu traiter la demande.");
+}
+
 // Health check endpoint
-app.get("/api/health", (req, res) => {
+app.get(["/api/health", "/health"], (req, res) => {
   const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY");
   res.json({ status: "ok", mode: hasKey ? "live" : "demo" });
 });
 
 // Main Generation API endpoint
-app.post("/api/generate", async (req, res) => {
+app.post(["/api/generate", "/generate"], async (req, res) => {
   const requestId = "req_" + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
   
   try {
@@ -377,18 +412,9 @@ app.post("/api/generate", async (req, res) => {
       } as GenerationResponse);
     }
 
-    console.log(`[${requestId}] Appels à Gemini API (gemini-3.6-flash) pour le module ${module}...`);
+    console.log(`[${requestId}] Génération IA en cours pour le module ${module}...`);
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: prompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-      },
-    });
-
-    const outputText = response.text || "";
+    const outputText = await generateWithGemini(ai, prompt, SYSTEM_INSTRUCTION, 0.7);
 
     if (!outputText) {
       console.warn(`[${requestId}] Réponse vide de Gemini. Bascule sur le générateur de secours.`);
@@ -435,7 +461,7 @@ app.post("/api/generate", async (req, res) => {
 });
 
 // Quick Email Actions Endpoint (Shorten, Expand, Formalize, Translate)
-app.post("/api/email-action", async (req, res) => {
+app.post(["/api/email-action", "/email-action"], async (req, res) => {
   const requestId = "req_act_" + Date.now().toString(36);
 
   try {
@@ -474,18 +500,11 @@ app.post("/api/email-action", async (req, res) => {
       return res.json({ requestId, content: transformed, status: "demo", isDemoMode: true });
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: actionPrompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.5,
-      },
-    });
+    const transformedText = await generateWithGemini(ai, actionPrompt, SYSTEM_INSTRUCTION, 0.5);
 
     return res.json({
       requestId,
-      content: response.text || content,
+      content: transformedText || content,
       status: "success",
       isDemoMode: false
     });
