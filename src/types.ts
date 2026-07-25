@@ -1,4 +1,4 @@
-export type ModuleType = 'business_plan' | 'admin_doc' | 'email';
+export type ModuleType = 'business_plan' | 'admin_doc' | 'email' | 'chat_assistant' | 'translator' | 'rag_builder';
 
 export type Language = 'fr' | 'en' | 'sw';
 
@@ -61,9 +61,45 @@ export interface EmailPayload {
   referenceFile?: ReferenceFile;
 }
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
+
+export interface ChatAssistantPayload {
+  message: string;
+  conversationHistory?: ChatMessage[];
+  language: Language;
+  category?: 'administrative' | 'business' | 'tax_legal' | 'general';
+}
+
+export interface TranslatorPayload {
+  sourceText?: string;
+  sourceLanguage: 'auto' | Language;
+  targetLanguage: Language;
+  referenceFile?: ReferenceFile;
+  preserveFormatting?: boolean;
+}
+
+export interface RagBotConfig {
+  botName: string;
+  systemPrompt: string;
+  welcomeMessage: string;
+  knowledgeFiles: ReferenceFile[];
+  isPublic: boolean;
+  allowedDomains?: string;
+}
+
+export interface RagBuilderPayload {
+  config: RagBotConfig;
+  testQuery?: string;
+}
+
 export interface GenerationRequest {
   module: ModuleType;
-  data: BusinessPlanPayload | AdminDocPayload | EmailPayload;
+  data: BusinessPlanPayload | AdminDocPayload | EmailPayload | ChatAssistantPayload | TranslatorPayload | RagBuilderPayload;
 }
 
 export interface QuickActionPayload {
@@ -82,4 +118,22 @@ export interface GenerationResponse {
 }
 
 export type ActiveTab = 'form' | 'result';
+
+export type ThemeMode = 'light' | 'dark';
+
+export interface LocalGemmaModel {
+  id: string;
+  name: string;
+  specialty: string;
+  size: string;
+  isInstalled: boolean;
+  version?: string;
+}
+
+export interface AppSettings {
+  theme: ThemeMode;
+  language: Language;
+  aiModel: string;
+  selectedLocalModelId: string | null;
+}
 

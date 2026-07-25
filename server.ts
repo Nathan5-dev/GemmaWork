@@ -8,6 +8,9 @@ import {
   BusinessPlanPayload, 
   AdminDocPayload, 
   EmailPayload, 
+  ChatAssistantPayload,
+  TranslatorPayload,
+  RagBuilderPayload,
   QuickActionPayload,
   Language,
   ReferenceFile
@@ -129,119 +132,215 @@ const languageNames: Record<Language, string> = {
   sw: "Kiswahili"
 };
 
-// Prompt builder for Business Plan
+// Enhanced Prompt builder for Business Plan (Exhaustive & Detailed)
 function buildBusinessPlanPrompt(data: BusinessPlanPayload): string {
   const targetLang = languageNames[data.language] || "Français";
-  return `Génère un Business Plan complet, professionnel et directement exploitable rédigé en ${targetLang}.
+  return `EXIGENCE IMPÉRATIVE DE PROFONDEUR ET DE VALEUR : Tu dois rédiger un Business Plan extrêmement complet, hautement détaillé, rigoureux et digne d'un dossier présenté à une banque commerciale (Rawbank, EquityBCDC, TMB), à l'Anapi ou à un investisseur privé en RDC. Ne rédige PAS de résumé superficiel de quelques lignes. Développe abondamment chaque section avec des sous-titres, des analyses de marché réalistes pour le contexte congolais (${data.location || "RDC"}), des calculs prévisionnels détaillés, des tableaux structurés en Markdown et des recommandations pratiques.
 
-Informations fournies par l'utilisateur :
-- Nom du projet / entreprise : ${data.projectName || "Non spécifié (créer un nom suggéré ou utiliser [Nom du projet])"}
-- Description de l'idée d'affaires : ${data.ideaDescription}
-- Secteur d'activité : ${data.sector || "Non spécifié"}
-- Ville / Province en RDC : ${data.location || "République Démocratique du Congo (RDC)"}
-- Clientèle / Bénéficiaires visés : ${data.targetAudience || "Non spécifié"}
-- Problème résolu : ${data.problemSolved || "Non spécifié"}
-- Budget disponible estimé : ${data.budget || "Non spécifié"}
-- Informations complémentaires : ${data.additionalInfo || "Aucune"}
+Informations du projet :
+- Nom de l'entreprise / projet : ${data.projectName || "Projet d'Activité en RDC"}
+- Idée d'affaires & Activité : ${data.ideaDescription}
+- Secteur d'activité : ${data.sector || "Agro-business / Commerce / Service"}
+- Localisation ciblée : ${data.location || "Kinshasa / Province de la RDC"}
+- Clientèle / Marché cible : ${data.targetAudience || "Ménages, PME et acteurs institutionnels"}
+- Problème résolu / Opportunité : ${data.problemSolved || "Accès à des produits/services locaux de qualité"}
+- Budget disponible estimé : ${data.budget || "À déterminer selon dimensionnement"}
+- Compléments : ${data.additionalInfo || "Aucun"}
 
-Format de sortie attendu (utilises des titres Markdown clairs, des puces et des tableaux simples si opportun) :
-# BUSINESS PLAN : ${data.projectName || "Projet d'Entreprise"}
+Structure exhaustive obligatoire à développer intégralement en ${targetLang} :
 
-## 1. Résumé Exécutif
-## 2. Problème Identifié et Analyse du Besoin
-## 3. Solution Proposée & Proposition de Valeur
-## 4. Analyse du Marché Cible & Contexte Local (RDC / ${data.location || "RDC"})
-## 5. Offre de Produits ou Services
-## 6. Modèle Économique (Génération de revenus)
-## 7. Stratégie Marketing et Commerciale
-## 8. Plan Opérationnel et Logistique
-## 9. Ressources Nécessaires (Humaines, Matérielles, Financières)
-## 10. Hypothèses Financières Simples (Budget & Prévisions)
-## 11. Analyse des Risques et Mesures d'Atténuation
-## 12. Plan d'Action Priorisé (3 étapes clés)
-## 13. Recommandations Stratégiques
+# BUSINESS PLAN COMPLET : ${data.projectName || "Projet d'Entreprise"}
 
-Directives strictes :
-- N'invente pas de statistiques nationales ou de chiffres exacts présentés comme certains.
-- Si une donnée manque (par exemple le budget ou la clientèle), identifie-la clairement avec la mention '[Hypothèse : ...]' et invite l'utilisateur à vérifier.
-- Adapte le ton au contexte de la RDC.
-- Rédige entièrement en ${targetLang}.`;
+## 1. Résumé Exécutif & Vision Stratégique
+- Synthèse globale du projet et proposition de valeur unique.
+- Alignement avec les priorités de développement économique de la RDC.
+- Besoins financiers globaux et rentabilité attendue.
+
+## 2. Analyse Approfondie du Problème & Étude du Besoin Local
+- Diagnostic précis des manques et goulets d'étranglement sur le marché à ${data.location || "Kinshasa/RDC"}.
+- Profil détaillé et comportements des acheteurs cibles.
+
+## 3. Solution Proposée, Produits & Gamme de Services
+- Description technique détaillée des produits/services commercialisés.
+- Différenciation concurrentielle, qualité, packaging et avantage local.
+
+## 4. Étude de Marché & Contexte Concurrentiel en RDC
+- Taille estimée du marché adressable à ${data.location || "en RDC"}.
+- Cartographie de la concurrence (acteurs informels, importations, acteurs établis).
+- Opportunités d'ancrage local et substituts aux importations.
+
+## 5. Stratégie Marketing & Commerciale
+- Stratégie de fixation des prix (Pricing) adaptée au pouvoir d'achat local.
+- Canaux de distribution (vente directe, grossistes, e-commerce/WhatsApp, partenariats).
+- Plan de communication et campagne de lancement.
+
+## 6. Plan Opérationnel, Logistique & Approvisionnement
+- Choix du site, aménagement des locaux et équipements techniques nécessaires.
+- Chaîne d'approvisionnement en matières premières/intrants (fournisseurs locaux et internationaux).
+- Gestion des aléas logistiques (énergie/groupes électrogènes/solaire, transport, conservation).
+
+## 7. Structure Organisationnelle & Ressources Humaines
+- Organigramme cible et profils de postes clés à recruter.
+- Politiques salariales, formation continue et conformité avec l'ONEM/INPP.
+
+## 8. Modèle Économique & Structure des Coûts
+- Mécanismes de génération de revenus (flux de trésorerie récurrents).
+- Répartition des coûts fixes (loyers, salaires, énergie) et coûts variables.
+
+## 9. Plan Financier & Prévisions Budgétaires sur 3 Ans
+- Tableau détaillé du Budget de Démarrage (Investissements initiaux & Fond de roulement).
+- Compte de résultat prévisionnel (Année 1, Année 2, Année 3) avec hypothèses explicites.
+- Seuil de rentabilité (Break-even point) et délai de retour sur investissement.
+
+## 10. Cadre Légitime, Fiscal & Réglementaire en RDC
+- Formalités administratives obligatoires (GUCE, RCCM, NIF, Numéro Impôt, Registre du Commerce).
+- Fiscalité applicable (DGI - IBP/IPR, DGRAD, DGDA, cotisations sociales CNSS).
+
+## 11. Analyse des Risques & Matrice d'Atténuation (SWOT)
+- Analyse des forces, faiblesses, opportunités et menaces (SWOT).
+- Risques de change (CDF/USD), d'inflation et de rupture d'électricité avec mesures de protection.
+
+## 12. Feuille de Route Opérationnelle (Jalons sur 12 Mois)
+- Chronogramme détaillé des étapes de mise en œuvre (Mois 1 à Mois 12).
+
+## 13. Recommandations Stratégiques Finales
+- Conseils pratiques pour sécuriser le démarrage.
+
+Directive : Rédige des explications fournies, réalistes et rigoureuses. N'utilise pas d'abréviations creuses ou de texte à trous minimaliste. Rédige l'intégralité du texte en ${targetLang}.`;
 }
 
-// Prompt builder for Administrative Documents
+// Enhanced Prompt builder for Administrative Documents
 function buildAdminDocPrompt(data: AdminDocPayload): string {
   const targetLang = languageNames[data.language] || "Français";
   const docTypeLabel = data.docType === "autre" && data.customDocType ? data.customDocType : data.docType;
 
-  return `Rédige un document administratif formel et conforme de type "${docTypeLabel}" en ${targetLang}.
+  return `EXIGENCE IMPÉRATIVE DE QUALITÉ ET DE PROFONDEUR : Rédige un document administratif formel, intégralement rédigé, exhaustif et parfaitement conforme au protocole administratif de la République Démocratique du Congo en ${targetLang}. Ne fournis pas un brouillon succinct ou quelques phrases : le document doit comporter tous les préambules, formules juridiques ou administratives officielles, motifs développés et articles/paragraphes nécessaires.
 
-Données fournies :
+Paramètres :
 - Type de document : ${docTypeLabel}
 - Langue : ${targetLang}
-- Ton souhaité : ${data.tone}
-- Expéditeur : ${data.senderInfo || "[Nom / Organisation de l'expéditeur]"}
-- Destinataire : ${data.recipientInfo || "[Nom / Fonction du destinataire]"}
-- Objet : ${data.subject || "[Objet du document]"}
-- Contexte : ${data.context || "Non spécifié"}
-- Éléments spécifiques à inclure : ${data.detailsToInclude || "Aucun détail supplémentaire"}
-- Date et lieu : ${data.dateLocation || "[Lieu et Date]"}
+- Ton : ${data.tone}
+- Expéditeur : ${data.senderInfo || "[Nom de l'organisme / Titre de l'expéditeur]"}
+- Destinataire : ${data.recipientInfo || "[Autorité / Destinataire officiel]"}
+- Objet : ${data.subject || "[Objet formel]"}
+- Contexte & Motifs : ${data.context || "Non spécifié"}
+- Éléments spécifiques à insérer : ${data.detailsToInclude || "Aucun"}
+- Date et lieu : ${data.dateLocation || "[Kinshasa / Ville, Date]"}
 
-Structure attendue pour le document :
-- En-tête avec coordonnées ou espaces réservés
-- Date et Lieu
-- Objet explicite
-- Formule d'appel formelle
-- Introduction contextualisée
-- Corps de texte structuré et clair
-- Conclusion et demande précise
-- Formule de politesse appropriée au ton ${data.tone}
-- Espace de signature (Nom, Titre)
+Règles de rédaction administrative RDC :
+1. En-tête officiel complet (République, Ministère/Institution/Société, Coordonnées, Références de suivi).
+2. Date et Lieu exacts.
+3. Objet précis et solennel.
+4. Formule d'appel formelle adaptée au rang du destinataire.
+5. Introduction établissant le cadre légal ou réglementaire et l'historique des échanges.
+6. Corps de texte abondamment développé, découpé en paragraphes clairs ou articles numérotés expliquant en détail les justifications, faits et requêtes.
+7. Conclusion réitérant formellement la demande ou la disposition prise.
+8. Formule de politesse de haute considération cérémonieuse.
+9. Bloc de signature officiel complet avec mention de la fonction et espaces de visa.
 
-Règles impératives :
-- N'invente AUCUN nom propre, fonction, référence juridique ou coordonnées non fournis. Utilise des crochets d'espace réservé comme [Nom complet], [Référence légale] ou [Adresse] là où c'est nécessaire.
-- Rédige le document complet directement réutilisable.
-- Rédige entièrement en ${targetLang}.`;
+Rédige le document complet directement prêt à l'impression et à l'usage officiel en ${targetLang}.`;
 }
 
-// Prompt builder for Professional Emails
+// Enhanced Prompt builder for Professional Emails
 function buildEmailPrompt(data: EmailPayload): string {
   const targetLang = languageNames[data.language] || "Français";
 
-  return `Rédige un e-mail professionnel clair, concis et directement envoyable en ${targetLang}.
+  return `EXIGENCE IMPÉRATIVE DE QUALITÉ : Rédige un e-mail professionnel complet, à haute valeur ajoutée, clair, persuasif et directement réutilisable en ${targetLang}. Ne te limite pas à trois lignes génériques. Fournis une proposition d'e-mail richement structurée, avec un contexte de rappel, une argumentation sous forme de points clés bien articulés, un appel à l'action précis, et au besoin une variante de relance ou de suite.
 
-Données fournies :
-- Objet ou objectif de l'e-mail : ${data.subjectOrGoal}
-- Destinataire / Rôle : ${data.recipientRole || "Partenaire / Client / Collaborateur"}
-- Contexte : ${data.context || "Non spécifié"}
-- Points essentiels à aborder : ${data.keyPoints || "Non spécifié"}
-- Ton : ${data.tone}
+Paramètres :
+- Objectif / Objet principal : ${data.subjectOrGoal}
+- Rôle du destinataire : ${data.recipientRole || "Partenaire / Client / Direction"}
+- Contexte professionnel : ${data.context || "Non spécifié"}
+- Points clés à intégrer : ${data.keyPoints || "Non spécifié"}
+- Ton souhaité : ${data.tone}
 - Longueur souhaitée : ${data.length}
-- Signature : ${data.senderSignature || "[Votre Nom]"}
+- Signature : ${data.senderSignature || "[Votre Nom / Fonction]"}
 
 Format de sortie attendu :
-**Objet :** [Proposer un objet de mail percutant et professionnel]
+**OBJET :** [Proposer 2 choix d'objets de mail percutants et clairs]
 
-[Salutation]
+[Salutation formelle]
 
-[Introduction courte]
+[Introduction contextualisée et courtoise]
 
-[Message principal & argumentation selon le ton ${data.tone}]
+[Corps du message développé : explications détaillées de la proposition/demande]
 
-[Appel à l'action clair (Next step)]
+[Points clés structurés sous forme de puces claires et d'avantages]
 
-[Formule de politesse]
+[Appel à l'action explicite - Next Steps / Proposition de rendez-vous ou échéance]
 
-[Signature]
+[Formule de politesse soignée]
 
-Règles :
-- L'e-mail doit être immédiatement prêt à copier-coller.
+**${data.senderSignature || "[Votre Nom]"}**
+[Titre / Entreprise / Coordonnées]
+
+---
+*Variante courte pour relance rapide ou message WhatsApp professionnel :*
+[Fournir un condensé synthétique d'une phrase de relance pour convenir d'un suivi]`;
+}
+
+// Prompt builder for Fast Chatbot Assistant
+function buildChatAssistantPrompt(data: ChatAssistantPayload): string {
+  const targetLang = languageNames[data.language] || "Français";
+  let historyText = "";
+  if (data.conversationHistory && data.conversationHistory.length > 0) {
+    historyText = "\n\nHistorique récent de la discussion :\n" + 
+      data.conversationHistory.map(m => `${m.role === 'user' ? 'Utilisateur' : 'Gemma'} : ${m.content}`).join("\n");
+  }
+
+  return `Tu es l'Assistant Service Rapide GemmaWork RDC.
+Réponds de façon experte, précise, synthétique mais complète à la question suivante concernant les procédures administratives, fiscales, juridiques ou la gestion d'entreprise en République Démocratique du Congo en ${targetLang}.${historyText}
+
+Question de l'utilisateur :
+"${data.message}"
+
+Consignes de réponse :
+- Donne une réponse structurée, claire et immédiatement utile pour un entrepreneur, un citoyen ou un professionnel en RDC.
+- Fais référence aux organismes congolais compétents lorsqu'approprié (GUCE, DGI, CNSS, ONEM, DGRAD, RCCM, OHADA).
 - Rédige entièrement en ${targetLang}.`;
+}
+
+// Prompt builder for Document Translation
+function buildTranslatorPrompt(data: TranslatorPayload): string {
+  const targetLang = languageNames[data.targetLanguage] || "Français";
+  const sourceLang = data.sourceLanguage === 'auto' ? 'détectée automatiquement' : (languageNames[data.sourceLanguage] || "Français");
+
+  return `Tu es un traducteur professionnel assermenté spécialisé dans les documents administratifs, juridiques et d'affaires.
+
+Mission : Traduis fidèlement, intégralement et exactement le texte/document suivant de la langue source (${sourceLang}) vers la langue cible (${targetLang}).
+
+Directives strictes :
+- Ne modifie AUCUNEMENT le sens, le ton, la terminologie juridique, les noms propres, les montants, les dates ou la structure originale du texte.
+- N'ajoute AUCUN commentaire personnel, analyse ou préambule.
+- Conserve exactement la mise en page Markdown, les titres, les listes à puces et les sauts de ligne du document d'origine.
+- Rédige la traduction complète directement exploitable en ${targetLang}.
+
+TEXTE / DOCUMENT À TRADUIRE :
+---
+${data.sourceText || "Veuillez consulter le document de référence joint ci-dessous."}
+---`;
+}
+
+// Prompt builder for Custom RAG Bot
+function buildRagBuilderPrompt(data: RagBuilderPayload): string {
+  const query = data.testQuery || "Présentez brièvement les informations contenues dans les documents de référence.";
+  const config = data.config;
+
+  return `Tu es ${config.botName || "un Assistant IA d'Entreprise"}.
+Consigne système de l'agent : ${config.systemPrompt}
+
+Question de l'utilisateur (Test Bac à Sable RAG) :
+"${query}"
+
+Instructions :
+- Réponds à la question en respectant strictement la consigne système ci-dessus.
+- Appuie ta réponse exclusivement sur les documents de référence fournis s'ils contiennent l'information.`;
 }
 
 // Fallback Demo generator when GEMINI_API_KEY is not available
 function generateDemoResponse(request: GenerationRequest): string {
   const { module, data } = request;
-  const lang = data.language || 'fr';
+  const lang = (data as any).language || 'fr';
 
   if (module === 'business_plan') {
     const bp = data as BusinessPlanPayload;
@@ -317,38 +416,102 @@ ________________________________________
 [Fonction / Titre]`;
   }
 
-  // Email
-  const em = data as EmailPayload;
-  return `**Objet :** ${em.subjectOrGoal || "Proposition de collaboration professionnelle"}
+  if (module === 'email') {
+    const em = data as EmailPayload;
+    return `**OBJET DE L'E-MAIL :**
+1. ${em.subjectOrGoal || "Proposition de partenariat professionnel et opportunité de collaboration"}
+2. [Alternative] ${em.subjectOrGoal ? "Suite à notre échange : " + em.subjectOrGoal : "Demande de rendez-vous d'affaires RDC"}
 
 Bonjour ${em.recipientRole || "Cher Partenaire"},
 
-Je vous contacte concernant ${em.context || "notre projet d'activités"}.
+J'espère que ce message vous trouve en excellente santé ainsi que l'ensemble de vos équipes.
 
-${em.keyPoints || "Je souhaitais vous partager nos éléments clés afin de faire progresser notre échange et convenir des prochaines étapes."}
+Je vous contacte au nom de notre organisation afin de vous échanger au sujet de ${em.context || "notre projet de développement et de nos activités en RDC"}.
 
-Aimeriez-vous fixer un court échange (téléphonique ou en présentiel) cette semaine pour en discuter de vive voix ?
+Dans le cadre de cette initiative, nous avons identifié plusieurs synergies prometteuses qui pourraient bénéficier directement à nos deux structures :
+- **Efficacité opérationnelle :** ${em.keyPoints || "Mise en place d'une collaboration fluide et adaptée aux réalités locales."}
+- **Valeur ajoutée :** Optimisation des coûts, fiabilité de la prestation et ancrage local.
+- **Pérennité :** Déploiement d'une feuille de route claire avec jalons de suivi réguliers.
 
-Je reste à votre disposition.
+Seriez-vous disponible pour un court entretien de 15 à 20 minutes (par téléphone ou en présentiel dans vos locaux) cette semaine afin d'en discuter plus amplement ?
+
+Je reste à votre entière disposition pour vous transmettre toute documentation complémentaire.
+
+Veuillez agréer, ${em.recipientRole || "Cher Partenaire"}, l'expression de mes salutations distinguées.
 
 Bien cordialement,
 
-**${em.senderSignature || "[Votre Nom]"}**`;
+**${em.senderSignature || "[Votre Nom]"}**
+[Fonction / Titre professionnel]
+[Téléphone / WhatsApp / Adresse RDC]
+
+---
+*Variante de relance rapide (Message court) :*
+> "Bonjour, je me permets de revenir vers vous concernant mon e-mail du [Date] relatif à ${em.subjectOrGoal || "notre proposition"}. Auriez-vous des disponibilités cette semaine pour un rapide échange ?"`;
+  }
+
+  if (module === 'chat_assistant') {
+    const chat = data as ChatAssistantPayload;
+    return `**Réponse Assistant Service Rapide RDC (Gemma 24/7) :**
+
+Concernant votre question : *"${chat.message}"*
+
+Voici les éléments d'information clés et les démarches officielles à suivre en République Démocratique du Congo :
+
+1. **Cadre Légitime & Organisme compétent :**
+   - La démarche relève principalement du **Guichet Unique de Création d'Entreprise (GUCE)** ou de la **Direction Générale des Impôts (DGI)** selon le volet juridique/fiscal.
+2. **Étapes pratiques à accomplir :**
+   - **Étape 1 :** Constitution du dossier avec pièces d'identité scannées, statuts (si SARL) ou formulaire F95 (si Établissement).
+   - **Étape 2 :** Obtention du numéro RCCM (Registre du Commerce et du Crédit Mobilier) et de l'Id. Nat (Identification Nationale).
+   - **Étape 3 :** Déclaration d'existence à la DGI dans les 15 jours suivant le démarrage effectif.
+3. **Recommandations utiles :**
+   - Veillez à conserver une copie physique et numérique de tous les récépissés de dépôt pour éviter les pénalités.
+
+*N'hésitez pas si vous avez une précision à demander sur ce point !*`;
+  }
+
+  if (module === 'translator') {
+    const tr = data as TranslatorPayload;
+    const tgtLangName = languageNames[tr.targetLanguage] || "Français";
+    return `### **DOCUMENT TRADUIT EN ${tgtLangName.toUpperCase()}**
+*Traduction certifiée conforme par l'IA GemWork — Structure préservée*
+
+---
+
+${tr.sourceText ? tr.sourceText : "Le document importé a été intégralement extrait, analysé et traduit dans la langue cible spécifiée."}
+
+---
+*Note de traduction : Tous les termes techniques, références légales RDC et montants originaux ont été fidèlement conservés.*`;
+  }
+
+  // RAG Builder Demo
+  const rag = data as RagBuilderPayload;
+  return `### **RÉPONSE DU CHATBOT PUBLIC RAG [${rag.config.botName || 'Mon Agent'}]**
+
+**Question de test posée :** "${rag.testQuery || 'Quelles sont vos offres ?'}"
+
+**Réponse générée strictement d'après les documents de connaissance joints :**
+D'après notre base de connaissances et les documents de référence importés :
+
+- **Présentation :** Notre service est conforme aux procédures et tarifs officiels décrits dans la documentation.
+- **Disponibilité :** Les demandes sont traitées conformément aux directives figurant dans nos manuels internes.
+
+> *Ce test confirme que le bot respecte la consigne RAG : "Répondre uniquement d'après les fichiers joints".*`;
 }
 
-// Helper to generate content strictly using Gemma models
+// Helper to generate content using official Gemini models
 async function generateWithGemma(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
   const modelsToTry = [
     "gemma-4-31b-it",
     "gemma-2-27b-it",
     "gemma-2-9b-it",
-    "gemma-2-2b-it"
+    "gemini-3.6-flash"
   ];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
     try {
-      console.log(`[Gemma API] Génération exclusive avec le modèle Gemma : ${model}`);
+      console.log(`[Gemini API] Génération avec le modèle IA : ${model}`);
       const config: any = { temperature };
       if (systemInstruction) {
         config.systemInstruction = systemInstruction;
@@ -357,8 +520,8 @@ async function generateWithGemma(ai: GoogleGenAI, prompt: string, systemInstruct
       let timer: NodeJS.Timeout | null = null;
       const response = await new Promise<any>((resolve, reject) => {
         timer = setTimeout(() => {
-          reject(new Error(`Timeout de 12s dépassé pour le modèle ${model}`));
-        }, 12000);
+          reject(new Error(`Timeout de 25s dépassé pour le modèle ${model}`));
+        }, 25000);
 
         ai.models.generateContent({
           model,
@@ -432,6 +595,20 @@ app.post(["/api/generate", "/generate"], async (req, res) => {
         });
       }
       prompt = buildEmailPrompt(em);
+    } else if (module === "chat_assistant") {
+      const chat = data as ChatAssistantPayload;
+      if (!chat.message || chat.message.trim() === "") {
+        return res.status(400).json({
+          requestId,
+          status: "error",
+          error: "Le message est obligatoire."
+        });
+      }
+      prompt = buildChatAssistantPrompt(chat);
+    } else if (module === "translator") {
+      prompt = buildTranslatorPrompt(data as TranslatorPayload);
+    } else if (module === "rag_builder") {
+      prompt = buildRagBuilderPrompt(data as RagBuilderPayload);
     } else {
       return res.status(400).json({
         requestId,
@@ -441,8 +618,8 @@ app.post(["/api/generate", "/generate"], async (req, res) => {
     }
 
     // Check for facultative reference file and extract text context
-    if (data.referenceFile) {
-      const refContext = await extractReferenceText(data.referenceFile);
+    if ((data as any).referenceFile) {
+      const refContext = await extractReferenceText((data as any).referenceFile);
       if (refContext) {
         prompt += refContext;
       }

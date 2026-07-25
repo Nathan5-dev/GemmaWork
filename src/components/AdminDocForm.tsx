@@ -54,52 +54,55 @@ export const AdminDocForm: React.FC<AdminDocFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-8 shadow-xs space-y-7 max-w-4xl mx-auto">
+    <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700/80 p-5 sm:p-8 shadow-xs space-y-6 max-w-4xl mx-auto transition-colors">
       
       {/* Form Header */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-5">
-        <div className="flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-5">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 flex items-center justify-center shrink-0">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-lg sm:text-xl">Documents Administratifs</h3>
-            <p className="text-xs sm:text-sm text-slate-500">Concepteur officiel et institutionnel adapté à la RDC</p>
+            <h3 className="font-bold text-slate-900 dark:text-white text-lg sm:text-xl">Documents Administratifs</h3>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Rédaction officielle et administrative rigoureuse</p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={handleSample}
-          className="flex items-center space-x-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 px-3.5 py-2 rounded-xl transition-colors"
+          className="flex items-center justify-center space-x-2 text-xs font-bold text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900/80 border border-blue-200 dark:border-blue-800 px-3.5 py-2 rounded-xl transition-all cursor-pointer shrink-0"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-          <span>Exemple RDC</span>
+          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+          <span>Exemple pré-rempli</span>
         </button>
       </div>
 
       {validationError && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm rounded-xl flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{validationError}</span>
+        <div className="p-3.5 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs sm:text-sm rounded-xl flex items-center space-x-2.5">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          <span className="font-semibold">{validationError}</span>
         </div>
       )}
 
-      {/* Section 1: Type et Objet */}
-      <div className="space-y-4">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-1.5">
-          1. Type de Document & Identités
-        </h4>
+      {/* Section 1: Type & Identités */}
+      <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 sm:p-5 space-y-4">
+        <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-700/80 pb-2.5">
+          <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            Type de Document & Identités
+          </h4>
+        </div>
 
-        {/* Document Type Selector */}
-        <div>
-          <label className="font-semibold text-slate-800 text-xs sm:text-sm block mb-1.5">
-            {t.labels.docType} <span className="text-indigo-600 font-bold">*</span>
+        <div className="space-y-1.5">
+          <label className="font-bold text-slate-900 dark:text-slate-200 text-xs flex items-center space-x-1">
+            <span>{t.labels.docType}</span>
+            <span className="text-blue-600 dark:text-blue-400 font-extrabold">*</span>
           </label>
           <select
             value={formData.docType}
             onChange={(e) => setFormData({ ...formData, docType: e.target.value as AdminDocType })}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm font-medium"
+            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="lettre_officielle">{t.docTypes.lettre_officielle}</option>
             <option value="demande">{t.docTypes.demande}</option>
@@ -111,196 +114,95 @@ export const AdminDocForm: React.FC<AdminDocFormProps> = ({
           </select>
         </div>
 
-        {formData.docType === 'autre' && (
-          <div>
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm block mb-1.5">
-              {t.labels.customDocType} <span className="text-indigo-600 font-bold">*</span>
-            </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="font-bold text-slate-900 dark:text-slate-200 text-xs">{t.labels.senderInfo}</label>
             <input
               type="text"
-              placeholder="Ex: Procès-verbal de réunion, Convocation officielle..."
-              value={formData.customDocType}
-              onChange={(e) => setFormData({ ...formData, customDocType: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
-            />
-          </div>
-        )}
-
-        {/* Grid 2 cols: Sender & Recipient */}
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="font-semibold text-slate-800 text-xs sm:text-sm">
-                {t.labels.senderInfo}
-              </label>
-              <span className="text-[10px] text-slate-400">{t.labels.optional}</span>
-            </div>
-            <input
-              type="text"
-              placeholder="Ex: Mulamba Jean-Paul, Étudiant UNIKIN..."
+              placeholder="Ex: Nom, Prénom, Organisme..."
               value={formData.senderInfo}
               onChange={(e) => setFormData({ ...formData, senderInfo: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
+              className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="font-semibold text-slate-800 text-xs sm:text-sm">
-                {t.labels.recipientInfo}
-              </label>
-              <span className="text-[10px] text-slate-400">{t.labels.optional}</span>
-            </div>
+          <div className="space-y-1.5">
+            <label className="font-bold text-slate-900 dark:text-slate-200 text-xs">{t.labels.recipientInfo}</label>
             <input
               type="text"
-              placeholder="Ex: Monsieur le Directeur Général de la SNEL..."
+              placeholder="Ex: Destinataire, Titre ou Service..."
               value={formData.recipientInfo}
               onChange={(e) => setFormData({ ...formData, recipientInfo: e.target.value })}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
+              className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
 
-      {/* Section 2: Contenu et Contexte */}
-      <div className="space-y-4">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-1.5">
-          2. Objet & Contexte Détallé
-        </h4>
+      {/* Section 2: Contexte */}
+      <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 sm:p-5 space-y-4">
+        <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-700/80 pb-2.5">
+          <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            Objet & Contexte
+          </h4>
+        </div>
 
-        {/* Subject / Objet */}
-        <div>
-          <div className="flex justify-between items-center mb-1.5">
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm">
-              {t.labels.subject}
-            </label>
-            <span className="text-[10px] text-slate-400">{t.labels.optional}</span>
-          </div>
+        <div className="space-y-1.5">
+          <label className="font-bold text-slate-900 dark:text-slate-200 text-xs">{t.labels.subject}</label>
           <input
             type="text"
-            placeholder="Ex: Demande de stage académique pour la période de Septembre à Octobre..."
+            placeholder="Ex: Demande de partenariat / Note d'information..."
             value={formData.subject}
             onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
+            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Context */}
-        <div>
-          <div className="flex justify-between items-center mb-1.5">
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm">
-              {t.labels.context}
-            </label>
-            <span className="text-[10px] text-slate-400">{t.labels.optional}</span>
-          </div>
+        <div className="space-y-1.5">
+          <label className="font-bold text-slate-900 dark:text-slate-200 text-xs">{t.labels.context}</label>
           <textarea
             rows={4}
-            placeholder="Expliquez le contexte : Pourquoi écrivez-vous ce document ? Quelles sont les attentes principales ?"
+            placeholder="Expliquez le contexte ou l'objectif principal..."
             value={formData.context}
             onChange={(e) => setFormData({ ...formData, context: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm leading-relaxed"
-          />
-        </div>
-
-        {/* Details to Include */}
-        <div>
-          <div className="flex justify-between items-center mb-1.5">
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm">
-              {t.labels.detailsToInclude}
-            </label>
-            <span className="text-[10px] text-slate-400">{t.labels.optional}</span>
-          </div>
-          <textarea
-            rows={2}
-            placeholder="Ex: Dates précises, pièces jointes à mentionner, références légales ou antécédents..."
-            value={formData.detailsToInclude}
-            onChange={(e) => setFormData({ ...formData, detailsToInclude: e.target.value })}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
+            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
 
-      {/* Section 3: Reference Document Upload */}
-      <div className="space-y-4">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-1.5">
-          3. Document de Référence (Facultatif)
-        </h4>
+      {/* Section 3: Document de Référence */}
+      <div className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 sm:p-5 space-y-3">
+        <div className="flex items-center space-x-2 border-b border-slate-200 dark:border-slate-700/80 pb-2.5">
+          <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">
+            Fichier de Référence (Facultatif)
+          </h4>
+        </div>
         <ReferenceFileUploader
           referenceFile={referenceFile}
           onFileChange={setReferenceFile}
           label="Ajouter un document de référence"
-          hint="Importez un document PDF, DOCX ou TXT (max 10 Mo) pour enrichir la génération"
+          hint="PDF, DOCX ou TXT (max 10 Mo)"
         />
       </div>
 
-      {/* Section 4: Style, Date & Langue */}
-      <div className="space-y-4">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-1.5">
-          4. Style & Formatage
-        </h4>
-
-        <div className="grid sm:grid-cols-3 gap-4">
-          <div>
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm block mb-1.5">
-              {t.labels.tone}
-            </label>
-            <select
-              value={formData.tone}
-              onChange={(e) => setFormData({ ...formData, tone: e.target.value as Tone })}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm font-medium"
-            >
-              <option value="formel">{t.tones.formel}</option>
-              <option value="neutre">{t.tones.neutre}</option>
-              <option value="cordial">{t.tones.cordial}</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm block mb-1.5">
-              {t.labels.dateLocation}
-            </label>
-            <input
-              type="text"
-              placeholder="Ex: Kinshasa, le 25 Juillet 2026"
-              value={formData.dateLocation}
-              onChange={(e) => setFormData({ ...formData, dateLocation: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="font-semibold text-slate-800 text-xs sm:text-sm block mb-1.5">
-              {t.labels.outputLanguage}
-            </label>
-            <select
-              value={formData.language}
-              onChange={(e) => setFormData({ ...formData, language: e.target.value as Language })}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500 text-slate-900 text-xs sm:text-sm font-medium"
-            >
-              <option value="fr">Français (RDC)</option>
-              <option value="en">English</option>
-              <option value="sw">Kiswahili</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
       {/* Submit Button */}
-      <div className="pt-3">
+      <div className="pt-2">
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-4 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center justify-center space-x-2 text-sm sm:text-base disabled:opacity-60 cursor-pointer"
+          className="w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition-all flex items-center justify-center space-x-2 text-xs sm:text-sm disabled:opacity-60 cursor-pointer active:scale-98"
         >
           {isLoading ? (
             <>
-              <RefreshCw className="w-5 h-5 animate-spin text-white" />
-              <span>Génération en cours...</span>
+              <RefreshCw className="w-4 h-4 animate-spin text-white" />
+              <span>Génération du document en cours...</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-5 h-5 text-indigo-200" />
-              <span>Générer avec Gemma</span>
+              <Sparkles className="w-4 h-4 text-blue-200" />
+              <span>Générer le document (Gemma)</span>
             </>
           )}
         </button>
@@ -309,4 +211,3 @@ export const AdminDocForm: React.FC<AdminDocFormProps> = ({
     </form>
   );
 };
-

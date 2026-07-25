@@ -3,14 +3,13 @@ import {
   FileSpreadsheet, 
   FileText, 
   Mail, 
-  Sparkles, 
   ArrowRight, 
-  Building2, 
-  Users, 
-  Briefcase, 
-  CheckCircle2, 
-  MapPin, 
-  Zap 
+  Sparkles,
+  MessageSquareText,
+  Languages,
+  Bot,
+  Zap,
+  CheckCircle2
 } from 'lucide-react';
 import { ModuleType, Language } from '../types';
 import { translations } from '../data/translations';
@@ -23,217 +22,176 @@ interface HomeHeroProps {
 export const HomeHero: React.FC<HomeHeroProps> = ({ currentLang, onSelectModule }) => {
   const t = translations[currentLang];
 
+  const scrollToModules = () => {
+    const el = document.getElementById('main-modules-grid');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      onSelectModule('business_plan');
+    }
+  };
+
+  const modulesList = [
+    {
+      id: 'business_plan' as ModuleType,
+      title: 'Business Plan',
+      description: 'Gemma structure votre étude de marché, vos prévisions financières et la stratégie opérationnelle de votre entreprise.',
+      icon: FileSpreadsheet,
+      badge: 'Finances & Stratégie',
+      color: 'amber',
+      detail: 'Modèles financiers, prévisions de trésorerie & analyse SWOT.'
+    },
+    {
+      id: 'admin_doc' as ModuleType,
+      title: 'Documents administratifs',
+      description: 'Gemma rédige vos lettres officielles, notes de service, demandes administratives et attestations réglementaires.',
+      icon: FileText,
+      badge: 'Rédaction Officielle',
+      color: 'blue',
+      detail: 'Style protocolaire, formules de politesse & conformité juridique.'
+    },
+    {
+      id: 'email' as ModuleType,
+      title: 'E-mails professionnels',
+      description: 'Gemma compose des e-mails clairs, persuasifs et courtois pour toutes vos correspondances commerciales.',
+      icon: Mail,
+      badge: 'Communication',
+      color: 'emerald',
+      detail: 'Tons ajustables, relances partenariats & réponses officielles.'
+    },
+    {
+      id: 'chat_assistant' as ModuleType,
+      title: 'Assistant Service Rapide',
+      description: 'Interrogez directement l\'IA Gemma 24/7 pour obtenir des conseils administratifs, fiscaux et juridiques instantanés.',
+      icon: MessageSquareText,
+      badge: 'Chat IA Instantané',
+      color: 'cyan',
+      detail: 'Réponses instantanées, conseils pratiques & assistance juridique.'
+    },
+    {
+      id: 'translator' as ModuleType,
+      title: 'Traduction de Documents',
+      description: 'Gemma traduit fidèlement vos contrats, rapports et courriers en Français, Anglais et Kiswahili tout en conservant le format.',
+      icon: Languages,
+      badge: 'Multilingue',
+      color: 'purple',
+      detail: 'Préservation de la mise en page A4 & fidélité contextuelle.'
+    },
+    {
+      id: 'rag_builder' as ModuleType,
+      title: 'Créateur de Bot Public RAG',
+      description: 'Entraînez un assistant virtuel sur mesure basé sur Gemma en y important directement vos propres fichiers et règlements.',
+      icon: Bot,
+      badge: 'Base de Connaissances',
+      color: 'rose',
+      detail: 'Indexation de vos PDF/Word pour réponses sur mesure.'
+    }
+  ];
+
   return (
-    <div className="space-y-12 py-6 sm:py-10 animate-fade-in">
+    <div className="py-6 sm:py-10 animate-fade-in space-y-12">
       
-      {/* Main Banner / Headline */}
-      <div className="text-center max-w-3xl mx-auto space-y-4 px-4">
-        
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs sm:text-sm font-semibold">
-          <Sparkles className="w-4 h-4 text-indigo-600" />
-          <span>Gemma & Google GenAI pour la RDC</span>
+      {/* Main Hero Header */}
+      <div className="text-center max-w-4xl mx-auto px-4 space-y-6">
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold shadow-xs">
+          <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
+          <span>Propulsé par le modèle Gemma (Google AI)</span>
         </div>
 
+        {/* Main Title Requested */}
         <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-          Productivité & Rédaction IA pour les{' '}
-          <span className="text-indigo-600">
-            Entreprises & Administrations en RDC
-          </span>
+          Exploitez la puissance de l'IA pour booster votre productivité
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
-          {t.subtitle}
+        <p className="text-base sm:text-lg text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
+          GemWork est votre plateforme d'intelligence artificielle dédiée aux professionnels, entrepreneurs et administrations. Automatisez la production de vos documents complexes en toute sécurité et avec une précision rédactionnelle remarquable.
         </p>
 
-        {/* Target Badges */}
-        <div className="pt-2 flex flex-wrap justify-center gap-2 text-xs text-slate-600 font-medium">
-          <span className="px-3.5 py-1.5 bg-white rounded-full border border-slate-200 shadow-xs flex items-center space-x-1.5">
-            <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-            <span>PME & Startups</span>
-          </span>
-          <span className="px-3.5 py-1.5 bg-white rounded-full border border-slate-200 shadow-xs flex items-center space-x-1.5">
-            <Briefcase className="w-3.5 h-3.5 text-indigo-600" />
-            <span>ONG & Associations</span>
-          </span>
-          <span className="px-3.5 py-1.5 bg-white rounded-full border border-slate-200 shadow-xs flex items-center space-x-1.5">
-            <Users className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Étudiants & Administrations</span>
-          </span>
-          <span className="px-3.5 py-1.5 bg-white rounded-full border border-slate-200 shadow-xs flex items-center space-x-1.5">
-            <MapPin className="w-3.5 h-3.5 text-red-500" />
-            <span>Kinshasa, Lubumbashi, Goma...</span>
-          </span>
+        {/* Primary CTA Buttons */}
+        <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+          <button
+            onClick={scrollToModules}
+            className="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all text-sm sm:text-base inline-flex items-center space-x-2.5 cursor-pointer active:scale-98"
+          >
+            <span>Découvrir les modules</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
 
+        {/* Highlight features bar */}
+        <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-xs font-bold text-slate-700">
+          <div className="flex items-center justify-center space-x-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Rédaction instantanée</span>
+          </div>
+          <div className="flex items-center justify-center space-x-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Format A4 Éditable & Export PDF/Word</span>
+          </div>
+          <div className="flex items-center justify-center space-x-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Modèle Gemma Intégré</span>
+          </div>
+        </div>
       </div>
 
-      {/* 3 Main Module Cards */}
-      <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
-        
-        {/* Module 1: Business Plan */}
-        <div 
-          onClick={() => onSelectModule('business_plan')}
-          className="group relative bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer flex flex-col justify-between"
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <FileSpreadsheet className="w-6 h-6" />
-              </div>
-              <span className="px-2.5 py-1 text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg">
-                {t.modules.businessPlan.badge}
-              </span>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                {t.modules.businessPlan.title}
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                {t.modules.businessPlan.desc}
-              </p>
-            </div>
-
-            <ul className="text-xs text-slate-500 space-y-2 pt-2 border-t border-slate-100">
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Résumé exécutif & étude de marché RDC</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Modèle économique & hypothèses financières</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Plan d'action priorisé & recommandations</span>
-              </li>
-            </ul>
+      {/* 6 Modules Grid with Detailed Descriptions */}
+      <div id="main-modules-grid" className="max-w-6xl mx-auto px-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-slate-900">Les 6 Modules de la Plateforme</h2>
+            <p className="text-xs text-slate-500 font-medium">Découvrez comment l'IA Gemma vous accompagne dans chaque tâche</p>
           </div>
-
-          <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-            <span>Commencer le Business Plan</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
+          <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200">
+            6 Outils Spécialisés
+          </span>
         </div>
 
-        {/* Module 2: Admin Documents */}
-        <div 
-          onClick={() => onSelectModule('admin_doc')}
-          className="group relative bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer flex flex-col justify-between"
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <FileText className="w-6 h-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {modulesList.map((m) => {
+            const Icon = m.icon;
+            return (
+              <div 
+                key={m.id}
+                onClick={() => onSelectModule(m.id)}
+                className="group relative bg-white rounded-2xl border border-slate-200 p-6 shadow-xs hover:shadow-md hover:border-indigo-500 transition-all cursor-pointer flex flex-col justify-between"
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">
+                      {m.badge}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      {m.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed font-normal">
+                      {m.description}
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 text-[11px] font-medium text-slate-600 flex items-start space-x-2">
+                    <Zap className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5" />
+                    <span><strong>Avantage Gemma :</strong> {m.detail}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
+                  <span>Accéder au module</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <span className="px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-lg">
-                {t.modules.adminDoc.badge}
-              </span>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                {t.modules.adminDoc.title}
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                {t.modules.adminDoc.desc}
-              </p>
-            </div>
-
-            <ul className="text-xs text-slate-500 space-y-2 pt-2 border-t border-slate-100">
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Lettres officielles & demandes de stage / service</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Notes de service, comptes-rendus & attestations</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Formatage strict sans fausses informations</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-            <span>Rédiger un document</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
-
-        {/* Module 3: Email Professionnel */}
-        <div 
-          onClick={() => onSelectModule('email')}
-          className="group relative bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer flex flex-col justify-between"
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <Mail className="w-6 h-6" />
-              </div>
-              <span className="px-2.5 py-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg">
-                {t.modules.email.badge}
-              </span>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                {t.modules.email.title}
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                {t.modules.email.desc}
-              </p>
-            </div>
-
-            <ul className="text-xs text-slate-500 space-y-2 pt-2 border-t border-slate-100">
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>E-mails persuasifs, cordiaux ou administratifs</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Actions rapides : raccourcir, formaliser, traduire</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span>Objets d'e-mails optimisés & prêt à l'envoi</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-            <span>Composer un e-mail</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
-
-      </div>
-
-      {/* Trust & Features banner */}
-      <div className="max-w-5xl mx-auto px-4 pt-6">
-        <div className="bg-white rounded-2xl p-6 sm:p-8 text-slate-900 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center md:text-left">
-            <h3 className="text-base font-bold text-slate-900 flex items-center justify-center md:justify-start space-x-2">
-              <Zap className="w-5 h-5 text-indigo-600" />
-              <span>Génération instantanée en Français, English & Swahili</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-xl">
-              Choisissez votre langue de travail et exportez vos résultats directement en PDF pour vos présentations aux banques, bailleurs de fonds ou ministères.
-            </p>
-          </div>
-          <div className="shrink-0">
-            <button
-              onClick={() => onSelectModule('business_plan')}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-xs transition-all text-xs sm:text-sm flex items-center space-x-2"
-            >
-              <span>Essayer maintenant</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+            );
+          })}
         </div>
       </div>
 
     </div>
   );
 };
+

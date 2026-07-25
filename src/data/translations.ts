@@ -25,6 +25,21 @@ export interface Translations {
       desc: string;
       badge: string;
     };
+    chatAssistant: {
+      title: string;
+      desc: string;
+      badge: string;
+    };
+    translator: {
+      title: string;
+      desc: string;
+      badge: string;
+    };
+    ragBuilder: {
+      title: string;
+      desc: string;
+      badge: string;
+    };
   };
   actions: {
     generate: string;
@@ -102,9 +117,9 @@ export interface Translations {
 
 export const translations: Record<Language, Translations> = {
   fr: {
-    appName: "GemmaWork RDC",
+    appName: "GemWork",
     tagline: "Assistant IA de productivité pour la RDC",
-    subtitle: "Rédigez vos business plans, documents administratifs et e-mails professionnels adaptés au contexte congolais.",
+    subtitle: "Créez vos documents professionnels en quelques minutes avec l'IA.",
     selectLanguage: "Langue de l'interface",
     help: "Aide & Guide",
     home: "Accueil",
@@ -125,6 +140,21 @@ export const translations: Record<Language, Translations> = {
         title: "E-mail Professionnel IA",
         desc: "Composez des messages clairs et percutants pour vos partenaires, clients ou autorités.",
         badge: "Productivité Rapide"
+      },
+      chatAssistant: {
+        title: "Assistant Service Rapide",
+        desc: "Posez vos questions administratives, fiscales et juridiques RDC et obtenez des réponses instantanées.",
+        badge: "Chatbot Instantané"
+      },
+      translator: {
+        title: "Traducteur de Documents",
+        desc: "Traduisez fidèlement vos fichiers et textes (Français, English, Swahili) sans altérer leur structure.",
+        badge: "Fidélité & Format"
+      },
+      ragBuilder: {
+        title: "Créateur Chatbot Public RAG",
+        desc: "Configurez un agent IA répondant exclusivement d'après vos propres documents d'entreprise.",
+        badge: "Base Connaissances RAG"
       }
     },
     actions: {
@@ -201,9 +231,9 @@ export const translations: Record<Language, Translations> = {
     }
   },
   en: {
-    appName: "GemmaWork DRC",
-    tagline: "AI Business & Productivity Assistant for DRC",
-    subtitle: "Draft your business plans, administrative documents, and professional emails tailored to the Congolese context.",
+    appName: "GemWork",
+    tagline: "AI Productivity Assistant",
+    subtitle: "Create your professional documents in minutes with AI.",
     selectLanguage: "Interface Language",
     help: "Help & Guide",
     home: "Home",
@@ -224,6 +254,21 @@ export const translations: Record<Language, Translations> = {
         title: "AI Professional Email",
         desc: "Compose clear and impactful messages for partners, clients, or institutional authorities.",
         badge: "Fast Productivity"
+      },
+      chatAssistant: {
+        title: "Fast Service Assistant",
+        desc: "Ask your DRC administrative, tax, and legal questions for instant authoritative answers.",
+        badge: "Instant Chatbot"
+      },
+      translator: {
+        title: "Document Translator",
+        desc: "Faithfully translate your files and text (French, English, Swahili) while preserving layout.",
+        badge: "Exact Translation"
+      },
+      ragBuilder: {
+        title: "Custom Public RAG Bot Builder",
+        desc: "Set up a custom AI chatbot that answers strictly based on your uploaded company documents.",
+        badge: "RAG Knowledge Base"
       }
     },
     actions: {
@@ -300,9 +345,9 @@ export const translations: Record<Language, Translations> = {
     }
   },
   sw: {
-    appName: "GemmaWork RDC",
-    tagline: "Msaidizi wa AI wa uzalishaji na biashara katika RDC",
-    subtitle: "Andika mipango ya biashara, nyaraka za kiserikali na barua pepe za kitaalamu kulingana na mazingira ya Kongo.",
+    appName: "GemWork",
+    tagline: "Msaidizi wa AI wa uzalishaji na biashara",
+    subtitle: "Tengeneza nyaraka zako za kitaalamu kwa dakika chache ukitumia AI.",
     selectLanguage: "Lugha ya Mfumo",
     help: "Msaada na Mwongozo",
     home: "Nyumbani",
@@ -323,6 +368,21 @@ export const translations: Record<Language, Translations> = {
         title: "Barua Pepe ya Kitaalamu (AI)",
         desc: "Tengeneza ujumbe wazi na wenye nguvu kwa washirika, wateja au mamlaka.",
         badge: "Uzalishaji wa Haraka"
+      },
+      chatAssistant: {
+        title: "Msaidizi wa Huduma ya Haraka",
+        desc: "Uliza maswali ya kiserikali, kodi na sheria katika RDC na upate majibu ya papo hapo.",
+        badge: "Chatbot ya Haraka"
+      },
+      translator: {
+        title: "Mtafsiri wa Nyaraka",
+        desc: "Tafsiri faili na maandishi yako kwa usahihi (Kifaransa, Kiingereza, Kiswahili) bila kubadilisha muundo.",
+        badge: "Utafsiri wa Kweli"
+      },
+      ragBuilder: {
+        title: "Mjenzi wa Chatbot ya Umma RAG",
+        desc: "Tengeneza chatbot ya AI inayojibu maswali kwa kutumia nyaraka zako za kampuni pekee.",
+        badge: "Hifadhi ya Nyaraka RAG"
       }
     },
     actions: {

@@ -24,7 +24,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, currentLa
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Guide & Aide — GemmaWork RDC</h2>
+              <h2 className="text-xl font-bold text-white">Guide & Aide — GemWork</h2>
               <p className="text-xs text-slate-400">Comment utiliser l'assistant IA de productivité</p>
             </div>
           </div>
@@ -42,10 +42,10 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, currentLa
           <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/80">
             <h3 className="font-semibold text-white flex items-center space-x-2 text-base mb-2">
               <Sparkles className="w-4 h-4 text-indigo-400" />
-              <span>Qu'est-ce que GemmaWork RDC ?</span>
+              <span>Qu'est-ce que GemWork ?</span>
             </h3>
             <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
-              GemmaWork RDC est un outil d'intelligence artificielle fondé sur le modèle Gemma de Google. Il est spécialement conçu pour accélérer la rédaction professionnelle des entrepreneurs, PME, ONG, étudiants et administrations en République Démocratique du Congo.
+              GemWork est un outil d'intelligence artificielle fondé sur les modèles Gemma de Google. Il est spécialement conçu pour accélérer la rédaction professionnelle des entrepreneurs, PME, ONG, étudiants et administrations.
             </p>
           </div>
 

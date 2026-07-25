@@ -2,30 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { ModuleNav } from './components/ModuleNav';
 import { HelpModal } from './components/HelpModal';
+import { SettingsModal } from './components/SettingsModal';
 import { HomeHero } from './components/HomeHero';
 import { BusinessPlanForm } from './components/BusinessPlanForm';
 import { AdminDocForm } from './components/AdminDocForm';
 import { EmailForm } from './components/EmailForm';
+import { ChatAssistantView } from './components/ChatAssistantView';
+import { TranslatorForm } from './components/TranslatorForm';
+import { RagBuilderForm } from './components/RagBuilderForm';
 import { ResultPanel } from './components/ResultPanel';
 import { Footer } from './components/Footer';
 import { 
   ModuleType, 
   Language, 
-  BusinessPlanPayload, 
-  AdminDocPayload, 
-  EmailPayload, 
   GenerationRequest, 
   GenerationResponse,
-  ActiveTab
+  ActiveTab,
+  AppSettings,
+  ThemeMode
 } from './types';
 import { translations } from './data/translations';
-import { ArrowLeft, Sparkles, Edit3, FileText, LayoutGrid, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Sparkles } from 'lucide-react';
 
 export default function App() {
-  const [currentLang, setCurrentLang] = useState<Language>('fr');
+  // Load settings from localStorage
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    const savedLang = (localStorage.getItem('gemwork_lang') as Language) || 'fr';
+    const savedModel = localStorage.getItem('gemwork_model') || 'gemini-3.6-flash';
+    const savedLocalModel = localStorage.getItem('gemwork_local_model') || null;
+
+    return {
+      theme: 'light',
+      language: savedLang,
+      aiModel: savedModel,
+      selectedLocalModelId: savedLocalModel
+    };
+  });
+
+  const [currentLang, setCurrentLang] = useState<Language>(settings.language);
   const [activeModule, setActiveModule] = useState<ModuleType | null>(null);
   const [activeTab, setActiveTab] = useState<ActiveTab>('form');
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   const [generatedContent, setGeneratedContent] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -33,7 +51,28 @@ export default function App() {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [lastPayload, setLastPayload] = useState<GenerationRequest | null>(null);
 
-  const t = translations[currentLang];
+  // Force light theme on document root element
+  useEffect(() => {
+    document.documentElement.classList.remove('dark');
+  }, []);
+
+  // Keep currentLang synced with settings language
+  useEffect(() => {
+    setCurrentLang(settings.language);
+  }, [settings.language]);
+
+  // Save settings to localStorage
+  const handleUpdateSettings = (newSettings: AppSettings) => {
+    setSettings(newSettings);
+    localStorage.setItem('gemwork_theme', newSettings.theme);
+    localStorage.setItem('gemwork_lang', newSettings.language);
+    localStorage.setItem('gemwork_model', newSettings.aiModel);
+    if (newSettings.selectedLocalModelId) {
+      localStorage.setItem('gemwork_local_model', newSettings.selectedLocalModelId);
+    } else {
+      localStorage.removeItem('gemwork_local_model');
+    }
+  };
 
   // Check health on load
   useEffect(() => {
@@ -54,7 +93,7 @@ export default function App() {
     setLastPayload(null);
   };
 
-  const handleGenerate = async (payloadData: BusinessPlanPayload | AdminDocPayload | EmailPayload) => {
+  const handleGenerate = async (payloadData: any) => {
     if (!activeModule) return;
 
     const requestPayload: GenerationRequest = {
@@ -71,14 +110,17 @@ export default function App() {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestPayload)
+        body: JSON.stringify({
+          ...requestPayload,
+          model: settings.aiModel
+        })
       });
 
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         const text = await res.text();
         console.error("Réponse API non JSON reçue :", text.substring(0, 300));
-        throw new Error(`Erreur serveur Vercel (Code ${res.status}). Assurez-vous d'avoir configuré GEMINI_API_KEY dans les variables d'environnement Vercel et de redéployer.`);
+        throw new Error(`Erreur serveur (Code ${res.status}). Assurez-vous que l'API est accessible.`);
       }
 
       const data: GenerationResponse = await res.json();
@@ -135,23 +177,17 @@ export default function App() {
     }
   };
 
-  const getModuleTitle = () => {
-    if (activeModule === 'business_plan') return t.modules.businessPlan.title;
-    if (activeModule === 'admin_doc') return t.modules.adminDoc.title;
-    if (activeModule === 'email') return t.modules.email.title;
-    return '';
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 flex flex-col selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900 dark:selection:text-indigo-100 transition-colors">
       
       {/* Navigation Header */}
       <Navbar
         currentLang={currentLang}
-        onLanguageChange={setCurrentLang}
+        onLanguageChange={(lang) => handleUpdateSettings({ ...settings, language: lang })}
         activeModule={activeModule}
         onSelectModule={handleSelectModule}
         onOpenHelp={() => setIsHelpOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         isDemoMode={isDemoMode}
       />
 
@@ -159,13 +195,13 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
         {!activeModule ? (
-          /* Home Screen with Module Cards */
+          /* Home Screen with Clean Hero & 3 Main Module Cards */
           <HomeHero
             currentLang={currentLang}
             onSelectModule={handleSelectModule}
           />
         ) : (
-          /* Active Module View with Enhanced Responsive Sub-Nav */
+          /* Active Module View with Navigation Sub-Nav */
           <div className="space-y-6 animate-fade-in">
             
             {/* Top Navigation & Tab Bar Header */}
@@ -178,14 +214,38 @@ export default function App() {
               hasGeneratedContent={!!generatedContent}
             />
 
-            {/* TAB CONTENT VIEWS (Responsive 2-column or focused tab view) */}
+            {/* TAB CONTENT VIEWS */}
             <div className="space-y-6">
-              
-              {/* Show Side-by-Side on wide desktop if preferred, or single tab view */}
-              <div className="hidden lg:grid grid-cols-12 gap-6 items-start">
-                
-                {/* Form Panel (5 cols) */}
-                <div className={`col-span-5 ${activeTab === 'result' && !generatedContent ? 'opacity-90' : ''}`}>
+
+              {/* View 1: FORM / INPUT TAB */}
+              {activeTab === 'form' && (
+                <div className="space-y-6 animate-fade-in">
+                  
+                  {/* Banner when a document has already been generated */}
+                  {generatedContent && activeModule !== 'chat_assistant' && (
+                    <div className="max-w-4xl mx-auto bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/60 dark:to-teal-950/60 border border-emerald-200/90 dark:border-emerald-800/80 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">Un document a été généré pour ce module</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-300">Vous pouvez modifier les champs ci-dessous ou consulter le résultat.</p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab('result')}
+                        className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5 shrink-0 cursor-pointer shadow-2xs active:scale-98"
+                      >
+                        <Sparkles className="w-4 h-4 text-emerald-200" />
+                        <span>Voir le résultat →</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Active Form / Interactive Module */}
                   {activeModule === 'business_plan' && (
                     <BusinessPlanForm
                       currentLang={currentLang}
@@ -209,10 +269,32 @@ export default function App() {
                       isLoading={isGenerating}
                     />
                   )}
-                </div>
 
-                {/* Result Panel (7 cols) */}
-                <div className="col-span-7">
+                  {activeModule === 'chat_assistant' && (
+                    <ChatAssistantView currentLang={currentLang} />
+                  )}
+
+                  {activeModule === 'translator' && (
+                    <TranslatorForm
+                      currentLang={currentLang}
+                      onSubmit={handleGenerate}
+                      isLoading={isGenerating}
+                    />
+                  )}
+
+                  {activeModule === 'rag_builder' && (
+                    <RagBuilderForm
+                      currentLang={currentLang}
+                      onSubmit={handleGenerate}
+                      isLoading={isGenerating}
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* View 2: RESULT TAB */}
+              {activeTab === 'result' && (
+                <div className="animate-fade-in">
                   <ResultPanel
                     currentLang={currentLang}
                     moduleType={activeModule}
@@ -223,55 +305,10 @@ export default function App() {
                     onRegenerate={handleRegenerate}
                     onQuickAction={handleQuickAction}
                     isActionLoading={isActionLoading}
+                    onGoToForm={() => setActiveTab('form')}
                   />
                 </div>
-
-              </div>
-
-              {/* Mobile / Tablet Tabbed Display */}
-              <div className="block lg:hidden">
-                {activeTab === 'form' ? (
-                  <div className="space-y-4">
-                    {activeModule === 'business_plan' && (
-                      <BusinessPlanForm
-                        currentLang={currentLang}
-                        onSubmit={handleGenerate}
-                        isLoading={isGenerating}
-                      />
-                    )}
-
-                    {activeModule === 'admin_doc' && (
-                      <AdminDocForm
-                        currentLang={currentLang}
-                        onSubmit={handleGenerate}
-                        isLoading={isGenerating}
-                      />
-                    )}
-
-                    {activeModule === 'email' && (
-                      <EmailForm
-                        currentLang={currentLang}
-                        onSubmit={handleGenerate}
-                        isLoading={isGenerating}
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    <ResultPanel
-                      currentLang={currentLang}
-                      moduleType={activeModule}
-                      content={generatedContent}
-                      isGenerating={isGenerating}
-                      isDemoMode={isDemoMode}
-                      onUpdateContent={setGeneratedContent}
-                      onRegenerate={handleRegenerate}
-                      onQuickAction={handleQuickAction}
-                      isActionLoading={isActionLoading}
-                    />
-                  </div>
-                )}
-              </div>
+              )}
 
             </div>
 
@@ -290,7 +327,15 @@ export default function App() {
         currentLang={currentLang}
       />
 
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={settings}
+        onUpdateSettings={handleUpdateSettings}
+        currentLang={currentLang}
+      />
+
     </div>
   );
 }
-
