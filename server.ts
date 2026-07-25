@@ -15,6 +15,14 @@ import {
 
 dotenv.config();
 
+process.on("unhandledRejection", (reason) => {
+  console.error("[Process] Rejection non gérée évitée :", reason);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("[Process] Exception non capturée évitée :", err);
+});
+
 const app = express();
 const PORT = 3000;
 
@@ -328,7 +336,7 @@ Bien cordialement,
 **${em.senderSignature || "[Votre Nom]"}**`;
 }
 
-// Helper to generate content trying Gemma and Gemini models in order with timeout
+// Helper to generate content trying Gemma and Gemini models in order with safe timeout
 async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
   const modelsToTry = ["gemma-4-31b-it", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
   let lastError: any = null;
@@ -336,25 +344,31 @@ async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruc
   for (const model of modelsToTry) {
     try {
       console.log(`[Gemma/Gemini API] Tentative de génération avec le modèle : ${model}`);
-      const config: any = {
-        temperature,
-      };
+      const config: any = { temperature };
       if (systemInstruction) {
         config.systemInstruction = systemInstruction;
       }
 
-      // 7.5 seconds timeout per model attempt to stay well under Vercel's 10s serverless timeout
-      const callPromise = ai.models.generateContent({
-        model,
-        contents: prompt,
-        config,
-      });
+      let timer: NodeJS.Timeout | null = null;
+      const response = await new Promise<any>((resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(`Timeout de 6.5s dépassé pour le modèle ${model}`));
+        }, 6500);
 
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error(`Timeout de 7.5s dépassé pour le modèle ${model}`)), 7500);
+        ai.models.generateContent({
+          model,
+          contents: prompt,
+          config,
+        })
+        .then((res) => {
+          if (timer) clearTimeout(timer);
+          resolve(res);
+        })
+        .catch((err) => {
+          if (timer) clearTimeout(timer);
+          reject(err);
+        });
       });
-
-      const response = await Promise.race([callPromise, timeoutPromise]);
 
       if (response && response.text) {
         return response.text;
@@ -365,7 +379,7 @@ async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruc
     }
   }
 
-  throw lastError || new Error("Aucun modèle IA valide n'a pu traiter la demande.");
+  throw lastError || new Error("Aucun modèle IA valide n'a pu traiter la demande dans le temps imparti.");
 }
 
 // Health check endpoint
