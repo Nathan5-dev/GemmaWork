@@ -74,6 +74,13 @@ export default function App() {
         body: JSON.stringify(requestPayload)
       });
 
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error("Réponse API non JSON reçue :", text.substring(0, 300));
+        throw new Error(`Réponse non-JSON du serveur (Code HTTP ${res.status}).`);
+      }
+
       const data: GenerationResponse = await res.json();
 
       if (data.status === 'success' || data.status === 'demo') {
@@ -86,7 +93,7 @@ export default function App() {
       }
     } catch (err: any) {
       console.error("Erreur d'appel API :", err);
-      setGeneratedContent("⚠️ Une erreur réseau est survenue. Veuillez vérifier votre connexion et réinstaller le dev server.");
+      setGeneratedContent(`⚠️ Erreur lors de la génération : ${err?.message || "Impossible de contacter l'API"}`);
     } finally {
       setIsGenerating(false);
     }
