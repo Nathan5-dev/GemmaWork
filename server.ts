@@ -307,33 +307,37 @@ Bien cordialement,
 **${em.senderSignature || "[Votre Nom]"}**`;
 }
 
-// Helper to generate content trying compatible Gemini models in order
+// Helper to generate content trying Gemma and Gemini models in order
 async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
-  const modelsToTry = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-3.6-flash"];
+  const modelsToTry = ["gemma-4-31b-it", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
     try {
-      console.log(`[Gemini API] Tentative de génération avec le modèle : ${model}`);
+      console.log(`[Gemma/Gemini API] Tentative de génération avec le modèle : ${model}`);
+      const config: any = {
+        temperature,
+      };
+      if (systemInstruction) {
+        config.systemInstruction = systemInstruction;
+      }
+
       const response = await ai.models.generateContent({
         model,
         contents: prompt,
-        config: {
-          systemInstruction,
-          temperature,
-        },
+        config,
       });
 
       if (response && response.text) {
         return response.text;
       }
     } catch (err: any) {
-      console.warn(`[Gemini API] Échec avec ${model} :`, err?.message || err);
+      console.warn(`[Gemma/Gemini API] Échec avec ${model} :`, err?.message || err);
       lastError = err;
     }
   }
 
-  throw lastError || new Error("Aucun modèle Gemini valide n'a pu traiter la demande.");
+  throw lastError || new Error("Aucun modèle IA valide n'a pu traiter la demande.");
 }
 
 // Health check endpoint
