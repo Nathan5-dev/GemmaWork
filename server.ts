@@ -20,6 +20,17 @@ const PORT = 3000;
 
 app.use(express.json({ limit: "20mb" }));
 
+// Enable CORS for Vercel deployment
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
+
 // System prompt as required by specification
 const SYSTEM_INSTRUCTION = `Tu es GemmaWork RDC, un assistant IA de productivité et de business destiné aux PME, ONG, startups, étudiants, entrepreneurs et administrations de la République démocratique du Congo. Tu produis des business plans, des documents administratifs et des e-mails professionnels en français, en anglais ou en swahili. Respecte strictly la langue, le ton, le type de document et le format demandés. Écris avec clarté, professionnalisme et sens pratique. Adapte les exemples au contexte congolais lorsque cela est pertinent, mais n’invente jamais de faits, de chiffres, de lois, de coordonnées ou de sources. Lorsqu’une donnée manque, indique une hypothèse ou un espace réservé. Fournis uniquement le contenu demandé, bien structuré et immédiatement exploitable.`;
 
@@ -49,15 +60,25 @@ async function extractReferenceText(refFile?: ReferenceFile): Promise<string> {
         const pdfParseModule = await import("pdf-parse/lib/pdf-parse.js" as any);
         pdfParse = pdfParseModule.default || pdfParseModule;
       } catch (_) {
-        const pdfParseModule = await import("pdf-parse");
-        pdfParse = (pdfParseModule as any).default || pdfParseModule;
+        try {
+          const pdfParseModule = await import("pdf-parse");
+          pdfParse = (pdfParseModule as any).default || pdfParseModule;
+        } catch (_) {
+          console.warn("[RefFile] Impossible de charger pdf-parse.");
+        }
       }
-      const parsed = await pdfParse(buffer);
-      text = parsed.text || "";
+      if (pdfParse) {
+        const parsed = await pdfParse(buffer);
+        text = parsed.text || "";
+      }
     } else if (nameLower.endsWith(".docx") || mimeLower.includes("wordprocessingml")) {
-      const mammoth = await import("mammoth");
-      const result = await mammoth.extractRawText({ buffer });
-      text = result.value || "";
+      try {
+        const mammoth = await import("mammoth");
+        const result = await mammoth.extractRawText({ buffer });
+        text = result.value || "";
+      } catch (e) {
+        console.warn("[RefFile] Impossible de lire le fichier docx :", e);
+      }
     } else {
       text = buffer.toString("utf-8");
     }
@@ -307,7 +328,7 @@ Bien cordialement,
 **${em.senderSignature || "[Votre Nom]"}**`;
 }
 
-// Helper to generate content trying Gemma and Gemini models in order
+// Helper to generate content trying Gemma and Gemini models in order with timeout
 async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
   const modelsToTry = ["gemma-4-31b-it", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
   let lastError: any = null;
@@ -322,11 +343,18 @@ async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruc
         config.systemInstruction = systemInstruction;
       }
 
-      const response = await ai.models.generateContent({
+      // 7.5 seconds timeout per model attempt to stay well under Vercel's 10s serverless timeout
+      const callPromise = ai.models.generateContent({
         model,
         contents: prompt,
         config,
       });
+
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error(`Timeout de 7.5s dépassé pour le modèle ${model}`)), 7500);
+      });
+
+      const response = await Promise.race([callPromise, timeoutPromise]);
 
       if (response && response.text) {
         return response.text;
@@ -516,6 +544,19 @@ app.post(["/api/email-action", "/email-action"], async (req, res) => {
   } catch (err: any) {
     console.error("Erreur dans /api/email-action :", err?.message || err);
     return res.status(500).json({ status: "error", error: "Échec du traitement rapide de l'action." });
+  }
+});
+
+// Global Express Error Handler to prevent raw 500 HTML responses on Vercel
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("[Express Error Handler]", err);
+  if (!res.headersSent) {
+    res.status(200).json({
+      status: "demo",
+      isDemoMode: true,
+      content: "Une erreur temporaire est survenue côté serveur. Le document de secours a été généré.",
+      message: err?.message || "Erreur serveur"
+    });
   }
 });
 

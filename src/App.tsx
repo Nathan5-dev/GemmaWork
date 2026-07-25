@@ -78,7 +78,7 @@ export default function App() {
       if (!contentType.includes('application/json')) {
         const text = await res.text();
         console.error("Réponse API non JSON reçue :", text.substring(0, 300));
-        throw new Error(`Réponse non-JSON du serveur (Code HTTP ${res.status}).`);
+        throw new Error(`Erreur serveur Vercel (Code ${res.status}). Assurez-vous d'avoir configuré GEMINI_API_KEY dans les variables d'environnement Vercel et de redéployer.`);
       }
 
       const data: GenerationResponse = await res.json();
