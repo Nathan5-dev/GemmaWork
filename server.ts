@@ -504,8 +504,6 @@ async function generateWithGemma(ai: GoogleGenAI, prompt: string, systemInstruct
   const modelsToTry = [
     "gemma-4-31b-it",
     "gemma-2-27b-it",
-    "gemma-2-9b-it",
-    "gemini-3.6-flash"
   ];
   let lastError: any = null;
 
