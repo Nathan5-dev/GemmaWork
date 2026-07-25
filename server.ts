@@ -336,14 +336,19 @@ Bien cordialement,
 **${em.senderSignature || "[Votre Nom]"}**`;
 }
 
-// Helper to generate content trying Gemma and Gemini models in order with safe timeout
-async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
-  const modelsToTry = ["gemma-4-31b-it", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+// Helper to generate content strictly using Gemma models
+async function generateWithGemma(ai: GoogleGenAI, prompt: string, systemInstruction: string, temperature = 0.7): Promise<string> {
+  const modelsToTry = [
+    "gemma-4-31b-it",
+    "gemma-2-27b-it",
+    "gemma-2-9b-it",
+    "gemma-2-2b-it"
+  ];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
     try {
-      console.log(`[Gemma/Gemini API] Tentative de génération avec le modèle : ${model}`);
+      console.log(`[Gemma API] Génération exclusive avec le modèle Gemma : ${model}`);
       const config: any = { temperature };
       if (systemInstruction) {
         config.systemInstruction = systemInstruction;
@@ -352,8 +357,8 @@ async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruc
       let timer: NodeJS.Timeout | null = null;
       const response = await new Promise<any>((resolve, reject) => {
         timer = setTimeout(() => {
-          reject(new Error(`Timeout de 6.5s dépassé pour le modèle ${model}`));
-        }, 6500);
+          reject(new Error(`Timeout de 12s dépassé pour le modèle ${model}`));
+        }, 12000);
 
         ai.models.generateContent({
           model,
@@ -374,12 +379,12 @@ async function generateWithGemini(ai: GoogleGenAI, prompt: string, systemInstruc
         return response.text;
       }
     } catch (err: any) {
-      console.warn(`[Gemma/Gemini API] Échec avec ${model} :`, err?.message || err);
+      console.warn(`[Gemma API] Échec avec le modèle Gemma ${model} :`, err?.message || err);
       lastError = err;
     }
   }
 
-  throw lastError || new Error("Aucun modèle IA valide n'a pu traiter la demande dans le temps imparti.");
+  throw lastError || new Error("Aucun modèle Gemma n'a pu traiter la demande.");
 }
 
 // Health check endpoint
@@ -458,9 +463,9 @@ app.post(["/api/generate", "/generate"], async (req, res) => {
       } as GenerationResponse);
     }
 
-    console.log(`[${requestId}] Génération IA en cours pour le module ${module}...`);
+    console.log(`[${requestId}] Génération IA en cours avec Gemma pour le module ${module}...`);
 
-    const outputText = await generateWithGemini(ai, prompt, SYSTEM_INSTRUCTION, 0.7);
+    const outputText = await generateWithGemma(ai, prompt, SYSTEM_INSTRUCTION, 0.7);
 
     if (!outputText) {
       console.warn(`[${requestId}] Réponse vide de Gemini. Bascule sur le générateur de secours.`);
@@ -546,7 +551,7 @@ app.post(["/api/email-action", "/email-action"], async (req, res) => {
       return res.json({ requestId, content: transformed, status: "demo", isDemoMode: true });
     }
 
-    const transformedText = await generateWithGemini(ai, actionPrompt, SYSTEM_INSTRUCTION, 0.5);
+    const transformedText = await generateWithGemma(ai, actionPrompt, SYSTEM_INSTRUCTION, 0.5);
 
     return res.json({
       requestId,
