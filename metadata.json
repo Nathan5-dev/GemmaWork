@@ -1,0 +1,6 @@
+{
+  "name": "GemmaWork RDC",
+  "description": "Assistant IA de productivité et de business pour PME, ONG, startups, étudiants et administrations en RDC.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
